@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -9,11 +10,16 @@ import os
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-# Ruta al archivo JSON en la carpeta credenciales
-ruta_credenciales =  os.path.join('credenciales',"firebase_clave.json")
+# Leer la variable de entorno con el JSON
+firebase_json = os.getenv("FIREBASE_CREDENCIALES_JSON")
+if not firebase_json:
+    raise ValueError("La variable de entorno FIREBASE_CREDENTIALS_JSON no está definida")
 
-# Inicializar Firebase
-cred = credentials.Certificate(ruta_credenciales)
+# Convertir el string JSON a dict
+cred_dict = json.loads(firebase_json)
+
+# Inicializar Firebase con el dict
+cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
