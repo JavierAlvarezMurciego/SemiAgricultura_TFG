@@ -1,0 +1,17 @@
+# Firebase config
+/firebase_config.properties
+
+# Archivos de compilación y caché de Android
+/build/
+/.idea/
+/.gradle/
+/local.properties
+*.iml
+
+# Archivos generados
+/app/build/
+/captures/
+/.externalNativeBuild/
+
+# Archivos de log
+*.log
