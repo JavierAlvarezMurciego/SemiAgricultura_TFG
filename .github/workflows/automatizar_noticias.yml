@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v3
+        with:
+              ref: clase-de-python # Apunta a mi rama clase-de-python
+              path: clase-de-python # Mismo lugar al no tenerlos dentro de una carpeta
 
       - name: Configurar Python
         uses: actions/setup-python@v4
