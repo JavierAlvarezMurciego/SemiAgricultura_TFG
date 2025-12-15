@@ -52,9 +52,19 @@ noticias_ref = db.collection("noticias")
 # Página etoy scrapeando
 URL = "https://efeagro.com/actualidad/"
 # Palabras clave para filtrar
-PALABRAS_CLAVE = ["sequía", "precios", "clima", "ayudas", "cosecha", "agua", "lluvia",
-            "tiempo", "subida", "bajada", "subvenciones", "subvención", "cereal","remolacha","alubias"
-            ,"inversiones","cosechadora","cebada","trigo","alubia"]
+PALABRAS_CLAVE = [    # Clima y agua
+    "sequía", "lluvia", "agua", "clima", "tiempo",
+    # Precios y mercado
+    "precios", "subida", "bajada", "mercado", "exportación", "importación",
+    # Cosecha y cultivos
+    "cosecha", "trigo", "cebada", "maíz", "remolacha", "alubias", "alubia", "cereal", "hortalizas", "legumbres",
+    # Ayudas y subvenciones
+    "ayudas", "subvención", "subvenciones", "inversiones", "apoyo",
+    # Maquinaria y gestión agrícola
+    "cosechadora", "tractor", "riego", "fertilizante", "semillas", "tecnología",
+    # Problemas y alertas del sector
+    "plaga", "enfermedad", "alerta", "restricción", "protesta"]
+
 # Límite de noticias que mantengo
 MAX_NOTICIAS = 5
 
@@ -118,22 +128,31 @@ for item in soup.select("article"):  # Muchos artículos están dentro de <artic
         titulo = titulo_tag.text.strip()
         resumen = resumen_tag.text.strip() if resumen_tag else ""
         link = link_tag["href"]
-        publicacion = fecha_tag.text.strip() if fecha_tag else ""
+        publication = fecha_tag.text.strip() if fecha_tag else ""
         imagen_url = imagen_tag["data-src"] if imagen_tag else ""
 
-        # Filtrar por keywords
-        if es_relevante(titulo + " " + resumen):
-            noticias.append({
-                "titulo": titulo,
-                "resumen": resumen,
-                "link": link,
-                "publicacion": publicacion,
-                "imagen_url": imagen_url
-            })
+        # Agrego todas las noticias sin filtrar
+        noticias.append({
+            # Lo que tengo entre comillas son los campos que están en la base de datos
+            "titulo": titulo,
+            "resumen": resumen,
+            "link": link,
+            "publication": publication,
+            "imagen_url": imagen_url
+        })
 
 # Ordeno por fecha (más recientes primero) y selecciono las 5 mejores noticias
-noticias.sort(key=lambda d: d.get("publicacion",""), reverse=True)
-top_noticias = noticias[:5]
+noticias.sort(key=lambda d: d.get("publication",""), reverse=True)
+
+# Divido las noticias en relevantes y no relevantes
+noticias_relevantes = [n for n in noticias if es_relevante(n["titulo"] + " " + n["resumen"])]
+noticias_no_relevantes = [n for n in noticias if not es_relevante(n["titulo"] + " " + n["resumen"])]
+
+# Cojo las MAX_NOTICIAS y las relleno con noticias no relevantes en caso de no completar con las relevantes
+top_noticias = noticias_relevantes[:MAX_NOTICIAS]
+faltantes = MAX_NOTICIAS - len(top_noticias)
+if faltantes > 0:
+    top_noticias += noticias_no_relevantes[:faltantes]
 
 # -----------------------------
 # SUBIR A FIREBASE
@@ -142,7 +161,7 @@ top_noticias = noticias[:5]
 docs = list(noticias_ref.stream())
 if len(docs) >= MAX_NOTICIAS:
     # Ordeno por fecha y borro las más antiguas
-    docs.sort(key=lambda d: d.get("publicacion", ""), reverse=True)
+    docs.sort(key=lambda d: d.to_dict().get("publication", ""), reverse=True)
     for doc in docs[MAX_NOTICIAS - len(top_noticias):]:
         doc.reference.delete()
 
@@ -150,4 +169,14 @@ if len(docs) >= MAX_NOTICIAS:
 for i, noticia in enumerate(top_noticias):
     noticias_ref.document(f"noticia_{i + 1}").set(noticia)
 
+# Eliminación de documentos antiguos que excedan MAX_NOTICIAS
+docs = list(noticias_ref.stream())  # refresco la lista después de subirla
+if len(docs) > MAX_NOTICIAS:
+    # Ordeno por fecha y borro los más antiguos
+    docs.sort(key=lambda d: d.to_dict().get("publication", ""), reverse=True)
+    for doc in docs[MAX_NOTICIAS:]:
+        doc.reference.delete()
+
 print(f"{len(top_noticias)} noticias actualizadas en Firebase correctamente!")
+
+
