@@ -21,27 +21,18 @@ import os
 # CONFIGURACIÓN FIREBASE
 # -----------------------------
 # Leer la variable de entorno con el JSON
-'''firebase_json = os.getenv("FIREBASE_CREDENCIALES_JSON")
+firebase_json = os.getenv("FIREBASE_CREDENCIALES_JSON")
 if not firebase_json:
-    raise ValueError("La variable de entorno FIREBASE_CREDENTIALS_JSON no está definida")'''
-
-ruta_json = os.path.join('credenciales',"firebase_clave.json")
-# Abrir el archivo y cargar su contenido
-with open(ruta_json, "r") as f:
-    cred = json.load(f)  # json.load, no json.loads
+    raise ValueError("La variable de entorno FIREBASE_CREDENTIALS_JSON no está definida")
 
 # Convertir el string JSON a dict
-#cred_dict = json.loads(firebase_json)
-# Carga mi archivo de servicio de Firebase para autenticar
-#cred_dict = json.loads(firebase_json)
-cred = credentials.Certificate(ruta_json)
-# Inicializa la conexión con Firebase
-firebase_admin.initialize_app(cred,{
-    "storageBucket": "SemiAgricultura.appspot.com"
-})
-# Obtengo el cliente de Firestore
+cred_dict = json.loads(firebase_json)
+
+# Inicializar Firebase con el dict
+cred = credentials.Certificate(cred_dict)
+firebase_admin.initialize_app(cred)
 db = firestore.client()
-bucket = storage.bucket()
+
 # Referencia a la colección "noticias" donde guardo las noticias
 noticias_ref = db.collection("noticias")
 
