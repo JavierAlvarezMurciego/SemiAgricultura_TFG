@@ -75,27 +75,6 @@ def es_relevante(texto):
     texto_limpio = limpiar_texto(texto)
     return any(k.lower() in texto_limpio for k in PALABRAS_CLAVE)
 
-def subir_imagen_storage(url, nombre_archivo):
-    """Descarga imagen de url y la sube a Firebase Storage"""
-    if not url:
-        return ""
-    response = requests.get(url, stream=True)
-    if response.status_code == 200:
-        temp_path = f"/tmp/{nombre_archivo}"
-        with open(temp_path, "wb") as f:
-            for chunk in response.iter_content(1024):
-                f.write(chunk)
-        # Creo un "objeto blob" en Firebase Storage dentro de la carpeta 'noticias' con el nombre de archivo definido
-        blob = bucket.blob(f"noticias/{nombre_archivo}")
-        # Subo el archivo temporal que descargamos desde la web a Firebase Storage
-        blob.upload_from_filename(temp_path)
-        # Hago que la imagen sea pública para poder usar su URL directamente en la app
-        blob.make_public()  # opcional, pero útil para mostrar la imagen sin autenticación
-        # Elimino el archivo temporal local para no llenar el disco con descargas
-        os.remove(temp_path)
-        return blob.public_url
-    return ""
-
 # -----------------------------
 # SCRAPING DE NOTICIAS
 # -----------------------------
