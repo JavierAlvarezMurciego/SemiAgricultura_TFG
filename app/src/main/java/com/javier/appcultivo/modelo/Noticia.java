@@ -4,7 +4,7 @@ public class Noticia {
         private String titulo;
         private String resumen;
         private String link;
-        private String publicacion;
+        private String publication;
         private String imagen_url;
 
         // Constructor vacío necesario para Firebase
@@ -15,7 +15,7 @@ public class Noticia {
             this.titulo = titulo;
             this.resumen = resumen;
             this.link = link;
-            this.publicacion = publicacion;
+            this.publication = publicacion;
             this.imagen_url = imagen_url;
         }
 
@@ -43,12 +43,12 @@ public class Noticia {
             this.link = link;
         }
 
-        public String getPublicacion() {
-            return publicacion;
+        public String getPublication() {
+            return publication;
         }
 
-        public void setPublicacion(String publicacion) {
-            this.publicacion = publicacion;
+        public void setPublication(String publication) {
+            this.publication = publication;
         }
 
         public String getImagenUrl() {

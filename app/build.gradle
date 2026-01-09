@@ -49,8 +49,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-analytics'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.6.21"
-    // Glide para cargar imágenes
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'  // Glide para cargar imágenes (Lo puedo quitar)
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0' // Librería para crear gráficas
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
     testImplementation 'junit:junit:4.13.2'
