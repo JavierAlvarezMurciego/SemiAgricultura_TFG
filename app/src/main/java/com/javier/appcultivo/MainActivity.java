@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.actividad_main2);
+        setContentView(R.layout.actividad_principal);
 
         LinearLayout barra = findViewById(R.id.barra_menu);
 
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         // Los click listeners
         itemInicio.setOnClickListener(v -> reemplazarFragmento(new InicioFragmento()));
         itemMercado.setOnClickListener(v -> reemplazarFragmento(new MercadoFragmento()));
-        itemAjustes.setOnClickListener(v -> reemplazarFragmento(new AjusteFragmento()));
+        //itemAjustes.setOnClickListener(v -> reemplazarFragmento(new AjusteFragmento()));
 
         // Fragmento inicial
         reemplazarFragmento(new InicioFragmento());

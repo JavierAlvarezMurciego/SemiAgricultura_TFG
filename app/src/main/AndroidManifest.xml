@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCultivo">
         <activity
-            android:name=".MainActivity"
+            android:name=".ActividadSplash"
+            android:theme="@style/Theme.AppCultivo.Splash"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +24,7 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".MainActivity" />
         <activity android:name=".modelo.GraficaCultivo"/>
     </application>
 

@@ -1,7 +1,12 @@
 package com.javier.appcultivo.modelo;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,8 +22,11 @@ import com.javier.appcultivo.R;
 import com.javier.appcultivo.firebase.FirestoreService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GraficaCultivo extends AppCompatActivity {
     private LineChart lineChart;
@@ -129,5 +137,28 @@ public class GraficaCultivo extends AppCompatActivity {
 
                     lineChart.invalidate(); // refrescar gráfico
                 });
+
+        // Botón eliminar favorito
+        Button bEliminarFav = findViewById(R.id.bEliminarFav);
+        SharedPreferences prefs = getSharedPreferences("mis_favoritos", MODE_PRIVATE);
+        String favoritosStr = prefs.getString("favoritos", "");
+        List<String> favoritos = new ArrayList<>();
+        if (!favoritosStr.isEmpty()) favoritos.addAll(Arrays.asList(favoritosStr.split("\\|")));
+
+        if(favoritos.contains(nombreCultivo)){
+            bEliminarFav.setVisibility(View.VISIBLE);
+        }
+
+        bEliminarFav.setOnClickListener(v -> {
+            favoritos.remove(nombreCultivo);
+            prefs.edit().putString("favoritos", String.join("|", favoritos)).apply();
+            Toast.makeText(this, nombreCultivo + " eliminado de favoritos", Toast.LENGTH_SHORT).show();
+            bEliminarFav.setVisibility(View.GONE);
+
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("cultivoEliminado", nombreCultivo);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        });
     }
 }

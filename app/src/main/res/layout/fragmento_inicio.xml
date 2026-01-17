@@ -5,46 +5,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Carrusel de noticias -->
+    <!-- Guideline para controlar la altura -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.55"/>
+
+    <!-- Carrusel de noticias ocupa la mitad superior -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerNoticias"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recyclerViewCultivos"
-        tools:itemCount="5"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp"
-        />
-    <!-- Indicadores -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabIndicadores"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- Los Indicadores para los puntos -->
+    <LinearLayout
+        android:id="@+id/puntitos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@id/viewPagerNoticias"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/recyclerViewCultivos"
-        android:layout_marginTop="8dp"
-        app:tabIndicatorHeight="0dp"
-        app:tabIndicator="@null"
-        app:tabSelectedTextColor="@android:color/black"
-        app:tabTextColor="@android:color/darker_gray"
-        app:tabGravity="center"
-        app:tabMode="fixed" />
+        app:layout_constraintBottom_toTopOf="@+id/bCultFav"
+        android:layout_marginBottom="8dp"/>
 
-    <!--Lista de cultivos debajo-->
+    <!-- Botón añadir favoritos -->
+    <Button
+        android:id="@+id/bCultFav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Añadir Cultivo Favorito"
+        android:textColor="@android:color/black"
+        android:backgroundTint="#FFEB3B"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        app:layout_constraintTop_toBottomOf="@id/puntitos"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/recyclerViewCultivosFavoritos"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Lista de cultivos favoritos -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewCultivos"
+        android:id="@+id/recyclerViewCultivosFavoritos"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/viewPagerNoticias"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="#6179FF"
+        app:layout_constraintTop_toBottomOf="@id/bCultFav"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:itemCount="6"
-        tools:listitem="@layout/item_cultivo"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.4"
+        android:padding="8dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

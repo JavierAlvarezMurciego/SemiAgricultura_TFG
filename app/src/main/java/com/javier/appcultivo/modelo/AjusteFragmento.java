@@ -18,7 +18,7 @@ public class AjusteFragmento extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        // Cargar lo que tenga la interfaz gráfica de Ajustes (cambiar lo de activity_main)
-        return inflater.inflate(R.layout.fragmento_inicio, container, false);
+        // Cargar lo que tenga la interfaz gráfica de Ajustes
+        return null;
     }
 }

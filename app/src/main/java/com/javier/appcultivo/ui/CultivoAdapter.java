@@ -16,32 +16,32 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.javier.appcultivo.R;
 import com.javier.appcultivo.firebase.FirestoreService;
 import com.javier.appcultivo.modelo.Cultivo;
 import com.javier.appcultivo.modelo.GraficaCultivo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class CultivoAdapter extends RecyclerView.Adapter<CultivoAdapter.CultivoViewHolder> {
 
     private List<Cultivo> cultivoList;
-    private FirestoreService firestoreService;
-    private LineChart lineChart;
+    private boolean seleccionFav = false;
+    private OnCultivoSelecListener listener;
+
+    public  interface OnCultivoSelecListener {
+        void onCultivoSelec(Cultivo cultivo);
+    }
 
     // Este método permite pasar la lista completa desde la Activity
-    public void setCultivos(List<Cultivo> cultivos) {
-        this.cultivoList = cultivos;
-        notifyDataSetChanged(); // actualiza la UI
-    }
-    public CultivoAdapter(List<Cultivo> cultivoList, LineChart lineChart) {
+//    public void setCultivos(List<Cultivo> cultivos) {
+//        this.cultivoList = cultivos;
+//        notifyDataSetChanged(); // actualiza la UI
+//    }
+    public CultivoAdapter(List<Cultivo> cultivoList) {
         this.cultivoList = cultivoList;
-        this.firestoreService = new FirestoreService();
-        this.lineChart = lineChart;
     }
 
     @Override
@@ -85,43 +85,21 @@ public class CultivoAdapter extends RecyclerView.Adapter<CultivoAdapter.CultivoV
             holder.precioAnteriorTextView.setTextColor(colorAnt);
 
             holder.itemView.setOnClickListener(v -> {
-                Context context = holder.itemView.getContext();
-                Intent intent = new Intent(context, GraficaCultivo.class);
-                intent.putExtra("nombreCultivo", cultivo.getNombre());
-                context.startActivity(intent);
+                if(seleccionFav && listener != null){
+                    listener.onCultivoSelec(cultivo); // listener viene de la interface
+                }else {
+                    // Aquí ya estoy creando la grafica con mi clase GraficaCultivo
+                    Context context = holder.itemView.getContext();
+                    Intent intent = new Intent(context, GraficaCultivo.class);
+                    intent.putExtra("nombreCultivo", cultivo.getNombre());
+                    context.startActivity(intent);
+                }
             });
 
         } catch (NumberFormatException e) {
             holder.precioActualTextView.setTextColor(Color.BLACK);
             holder.precioAnteriorTextView.setTextColor(Color.BLACK);
         }
-    }
-
-    private void crearGrafica(String nomCultivo){
-        firestoreService.getHistoricoPrecio(Collections.singletonList(nomCultivo), (preciosCultivo, fechas) -> {
-            List<Entry> entries = new ArrayList<>();
-            List<Double> precios = preciosCultivo.get(nomCultivo);
-
-            if (precios != null){
-                for (int i = 0; i < precios.size(); i++){
-                    entries.add(new Entry(i, precios.get(i).floatValue()));
-                }
-            }
-
-            LineDataSet dataSet = new LineDataSet(entries, nomCultivo);
-            dataSet.setColor(Color.BLUE);
-            dataSet.setLineWidth(2f);
-            dataSet.setCircleRadius(3f);
-
-            LineData lineData = new LineData(dataSet);
-            lineChart.setData(lineData);
-
-            lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(fechas));
-            lineChart.getXAxis().setGranularity(1f);
-            lineChart.getAxisRight().setEnabled(false);
-            lineChart.getDescription().setEnabled(false);
-            lineChart.invalidate();
-        });
     }
 
     @Override
@@ -140,5 +118,10 @@ public class CultivoAdapter extends RecyclerView.Adapter<CultivoAdapter.CultivoV
             precioAnteriorTextView = itemView.findViewById(R.id.numPrecioAnterior);
             icono = itemView.findViewById(R.id.iconoCutlivo);
         }
+    }
+
+    public void setModoSeleccionFavoritos(boolean modo, OnCultivoSelecListener listener){
+        this.seleccionFav = modo;
+        this.listener = listener; // listener viene de la interface
     }
 }
