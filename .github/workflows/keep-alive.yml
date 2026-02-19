@@ -1,0 +1,38 @@
+name: Keep Alive  # Nombre del workflow
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'   # Se ejecuta el día 1 de cada mes a las 00:00 UTC
+  workflow_dispatch:      # Permite ejecutar manualmente desde GitHub Actions
+
+permissions:
+  contents: write  # Necesario para poder hacer git add/commit/push en el repo
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest  # Uso un runner de Linux
+
+    steps:
+      # Paso 1: Clonar el repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Traer todo el historial del repo (por defecto solo trae el último commit)
+                          # Útil si algún día necesito tags, diffs o changelogs
+
+      # Paso 2: Actualizar un archivo de timestamp dentro de .github
+      - name: Update hidden timestamp
+        run: |
+          mkdir -p .github
+          date > .github/last_run.txt  # Guarda la fecha de ejecución
+                                      # Esto evita crear archivos visibles en la raíz
+
+      # Paso 3: Commit y push si hubo cambios
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions"  # Nombre de usuario para el commit
+          git config user.email "github-actions@github.com"  # Email para el commit
+          git add .github/last_run.txt
+          git commit -m "chore: monthly keep-alive" || echo "No changes"  
+          # Si no hay cambios, git commit falla; el echo evita que el workflow se detenga
+          git push  # Sube los cambios al repositorio
